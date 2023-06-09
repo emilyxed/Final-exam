@@ -1,0 +1,118 @@
+using LibraryManagement.DTOs;
+using LibraryManagement.Models;
+using LibraryManagement.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace LibraryManagement.Services
+{
+    public interface IBookService
+    {
+        Task<List<BookDTO>> GetAllBooksAsync();
+        Task<BookDTO> GetBookByIdAsync(int id);
+        Task CreateBookAsync(BookDTO bookDTO);
+        Task UpdateBookAsync(int id, BookDTO bookDTO);
+        Task DeleteBookAsync(int id);
+    }
+
+    public class BookService : IBookService
+    {
+        private readonly IBookRepository _bookRepository;
+
+        public BookService(IBookRepository bookRepository)
+        {
+            _bookRepository = bookRepository;
+        }
+
+        public async Task<List<BookDTO>> GetAllBooksAsync()
+        {
+            var books = await _bookRepository.GetAllBooksAsync();
+            var bookDTOs = new List<BookDTO>();
+
+            foreach (var book in books)
+            {
+                bookDTOs.Add(new BookDTO
+                {
+                    Id = book.Id,
+                    IBAN = book.IBAN,
+                    Name = book.Name,
+                    Author = book.Author,
+                    Publisher = book.Publisher,
+                    Year = book.Year,
+                    NumberOfCopies = book.NumberOfCopies
+                });
+            }
+
+            return bookDTOs;
+        }
+
+        public async Task<BookDTO> GetBookByIdAsync(int id)
+        {
+            var book = await _bookRepository.GetBookByIdAsync(id);
+
+            if (book == null)
+            {
+                return null;
+            }
+
+            var bookDTO = new BookDTO
+            {
+                Id = book.Id,
+                IBAN = book.IBAN,
+                Name = book.Name,
+                Author = book.Author,
+                Publisher = book.Publisher,
+                Year = book.Year,
+                NumberOfCopies = book.NumberOfCopies
+            };
+
+            return bookDTO;
+        }
+
+        public async Task CreateBookAsync(BookDTO bookDTO)
+        {
+            var book = new Book
+            {
+                IBAN = bookDTO.IBAN,
+                Name = bookDTO.Name,
+                Author = bookDTO.Author,
+                Publisher = bookDTO.Publisher,
+                Year = bookDTO.Year,
+                NumberOfCopies = bookDTO.NumberOfCopies
+            };
+
+            await _bookRepository.CreateBookAsync(book);
+        }
+
+        public async Task UpdateBookAsync(int id, BookDTO bookDTO)
+        {
+            var book = await _bookRepository.GetBookByIdAsync(id);
+
+            if (book == null)
+            {
+                return;
+            }
+
+            book.IBAN = bookDTO.IBAN;
+            book.Name = bookDTO.Name;
+            book.Author = bookDTO.Author;
+            book.Publisher = bookDTO.Publisher;
+            book.Year = bookDTO.Year;
+            book.NumberOfCopies = bookDTO.NumberOfCopies;
+
+            await _bookRepository.UpdateBookAsync(book);
+        }
+
+        public async Task DeleteBookAsync(int id)
+        {
+            var book = await _bookRepository.GetBookByIdAsync(id);
+
+            if (book == null)
+            {
+                return;
+            }
+
+            await _bookRepository.DeleteBookAsync(book);
+        }
+    }
+}
