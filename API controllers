@@ -1,0 +1,114 @@
+using LibraryManagement.DTOs;
+using LibraryManagement.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace LibraryManagement.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ClientController : ControllerBase
+    {
+        private readonly IClientService _clientService;
+
+        public ClientController(IClientService clientService)
+        {
+            _clientService = clientService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<ClientDTO>>> GetAllClients()
+        {
+            var clients = await _clientService.GetAllClientsAsync();
+            return Ok(clients);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ClientDTO>> GetClientById(int id)
+        {
+            var client = await _clientService.GetClientByIdAsync(id);
+
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateClient(ClientDTO clientDTO)
+        {
+            await _clientService.CreateClientAsync(clientDTO);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateClient(int id, ClientDTO clientDTO)
+        {
+            await _clientService.UpdateClientAsync(id, clientDTO);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteClient(int id)
+        {
+            await _clientService.DeleteClientAsync(id);
+            return NoContent();
+        }
+    }
+
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BookController : ControllerBase
+    {
+        private readonly IBookService _bookService;
+
+        public BookController(IBookService bookService)
+        {
+            _bookService = bookService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<BookDTO>>> GetAllBooks()
+        {
+            var books = await _bookService.GetAllBooksAsync();
+            return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<BookDTO>> GetBookById(int id)
+        {
+            var book = await _bookService.GetBookByIdAsync(id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBook(BookDTO bookDTO)
+        {
+            await _bookService.CreateBookAsync(bookDTO);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBook(int id, BookDTO bookDTO)
+        {
+            await _bookService.UpdateBookAsync(id, bookDTO);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBook(int id)
+        {
+            await _bookService.DeleteBookAsync(id);
+            return NoContent();
+        }
+    }
+}
