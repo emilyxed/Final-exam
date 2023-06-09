@@ -1,0 +1,102 @@
+using LibraryManagement.Data;
+using LibraryManagement.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace LibraryManagement.Repositories
+{
+    public interface IClientRepository
+    {
+        Task<List<Client>> GetAllClientsAsync();
+        Task<Client> GetClientByIdAsync(int id);
+        Task CreateClientAsync(Client client);
+        Task UpdateClientAsync(Client client);
+        Task DeleteClientAsync(Client client);
+    }
+
+    public class ClientRepository : IClientRepository
+    {
+        private readonly LibraryDbContext _dbContext;
+
+        public ClientRepository(LibraryDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+        public async Task<List<Client>> GetAllClientsAsync()
+        {
+            return await _dbContext.Clients.ToListAsync();
+        }
+
+        public async Task<Client> GetClientByIdAsync(int id)
+        {
+            return await _dbContext.Clients.FindAsync(id);
+        }
+
+        public async Task CreateClientAsync(Client client)
+        {
+            _dbContext.Clients.Add(client);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateClientAsync(Client client)
+        {
+            _dbContext.Entry(client).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteClientAsync(Client client)
+        {
+            _dbContext.Clients.Remove(client);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
+
+    public interface IBookRepository
+    {
+        Task<List<Book>> GetAllBooksAsync();
+        Task<Book> GetBookByIdAsync(int id);
+        Task CreateBookAsync(Book book);
+        Task UpdateBookAsync(Book book);
+        Task DeleteBookAsync(Book book);
+    }
+
+    public class BookRepository : IBookRepository
+    {
+        private readonly LibraryDbContext _dbContext;
+
+        public BookRepository(LibraryDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+        public async Task<List<Book>> GetAllBooksAsync()
+        {
+            return await _dbContext.Books.ToListAsync();
+        }
+
+        public async Task<Book> GetBookByIdAsync(int id)
+        {
+            return await _dbContext.Books.FindAsync(id);
+        }
+
+        public async Task CreateBookAsync(Book book)
+        {
+            _dbContext.Books.Add(book);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateBookAsync(Book book)
+        {
+            _dbContext.Entry(book).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteBookAsync(Book book)
+        {
+            _dbContext.Books.Remove(book);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
+}
