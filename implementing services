@@ -1,0 +1,130 @@
+using LibraryManagement.DTOs;
+using LibraryManagement.Models;
+using LibraryManagement.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace LibraryManagement.Services
+{
+    public interface IClientService
+    {
+        Task<List<ClientDTO>> GetAllClientsAsync();
+        Task<ClientDTO> GetClientByIdAsync(int id);
+        Task CreateClientAsync(ClientDTO clientDTO);
+        Task UpdateClientAsync(int id, ClientDTO clientDTO);
+        Task DeleteClientAsync(int id);
+    }
+
+    public class ClientService : IClientService
+    {
+        private readonly IClientRepository _clientRepository;
+
+        public ClientService(IClientRepository clientRepository)
+        {
+            _clientRepository = clientRepository;
+        }
+
+        public async Task<List<ClientDTO>> GetAllClientsAsync()
+        {
+            var clients = await _clientRepository.GetAllClientsAsync();
+            var clientDTOs = new List<ClientDTO>();
+
+            foreach (var client in clients)
+            {
+                clientDTOs.Add(new ClientDTO
+                {
+                    Id = client.Id,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    DOB = client.DOB,
+                    Address = client.Address,
+                    MembershipCardNumber = client.MembershipCardNumber,
+                    MembershipCardValidityDate = client.MembershipCardValidityDate,
+                    LoanDate = client.LoanDate,
+                    ReturnDate = client.ReturnDate,
+                    BookId = client.BookId
+                });
+            }
+
+            return clientDTOs;
+        }
+
+        public async Task<ClientDTO> GetClientByIdAsync(int id)
+        {
+            var client = await _clientRepository.GetClientByIdAsync(id);
+
+            if (client == null)
+            {
+                return null;
+            }
+
+            var clientDTO = new ClientDTO
+            {
+                Id = client.Id,
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                DOB = client.DOB,
+                Address = client.Address,
+                MembershipCardNumber = client.MembershipCardNumber,
+                MembershipCardValidityDate = client.MembershipCardValidityDate,
+                LoanDate = client.LoanDate,
+                ReturnDate = client.ReturnDate,
+                BookId = client.BookId
+            };
+
+            return clientDTO;
+        }
+
+        public async Task CreateClientAsync(ClientDTO clientDTO)
+        {
+            var client = new Client
+            {
+                FirstName = clientDTO.FirstName,
+                LastName = clientDTO.LastName,
+                DOB = clientDTO.DOB,
+                Address = clientDTO.Address,
+                MembershipCardNumber = clientDTO.MembershipCardNumber,
+                MembershipCardValidityDate = clientDTO.MembershipCardValidityDate,
+                LoanDate = clientDTO.LoanDate,
+                ReturnDate = clientDTO.ReturnDate,
+                BookId = clientDTO.BookId
+            };
+
+            await _clientRepository.CreateClientAsync(client);
+        }
+
+        public async Task UpdateClientAsync(int id, ClientDTO clientDTO)
+        {
+            var client = await _clientRepository.GetClientByIdAsync(id);
+
+            if (client == null)
+            {
+                return;
+            }
+
+            client.FirstName = clientDTO.FirstName;
+            client.LastName = clientDTO.LastName;
+            client.DOB = clientDTO.DOB;
+            client.Address = clientDTO.Address;
+            client.MembershipCardNumber = clientDTO.MembershipCardNumber;
+            client.MembershipCardValidityDate = clientDTO.MembershipCardValidityDate;
+            client.LoanDate = clientDTO.LoanDate;
+            client.ReturnDate = clientDTO.ReturnDate;
+            client.BookId = clientDTO.BookId;
+
+            await _clientRepository.UpdateClientAsync(client);
+        }
+
+        public async Task DeleteClientAsync(int id)
+        {
+            var client = await _clientRepository.GetClientByIdAsync(id);
+
+            if (client == null)
+            {
+                return;
+            }
+
+            await _clientRepository.DeleteClientAsync(client);
+        }
+    }
+}
